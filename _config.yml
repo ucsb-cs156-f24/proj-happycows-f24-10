@@ -23,4 +23,4 @@ repo_name: "TBD"
 repo: ucsb-cs156-f24/proj-happycows-f24-10
 owner: ucsb-cs156-f24
 repo_name: proj-happycows-f24-10
-pull_requests: [{"author":{"id":"U_kgDOBtxmHw","is_bot":false,"login":"justinwu13","name":"Justin Wu"},"headRefName":"jw-3-modal-capitalization","number":14,"title":"Use title case for Buy/Sell button in modal","url":"https://github.com/ucsb-cs156-f24/proj-happycows-f24-10/pull/14"}]
+pull_requests: [{"author":{"id":"MDQ6VXNlcjcyODQwNDQz","is_bot":false,"login":"rranu","name":"Rajvir Ranu"},"headRefName":"rr-1-correctlink","number":15,"title":"Corrected link to Professor de Vries' About Page","url":"https://github.com/ucsb-cs156-f24/proj-happycows-f24-10/pull/15"},{"author":{"id":"U_kgDOBtxmHw","is_bot":false,"login":"justinwu13","name":"Justin Wu"},"headRefName":"jw-3-modal-capitalization","number":14,"title":"Use title case for Buy/Sell button in modal","url":"https://github.com/ucsb-cs156-f24/proj-happycows-f24-10/pull/14"}]
