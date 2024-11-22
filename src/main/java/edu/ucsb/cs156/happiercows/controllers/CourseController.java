@@ -105,7 +105,7 @@ public class CourseController extends ApiController {
     @Operation(summary = "Update a single course")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("")
-    public Course updateCommons(
+    public Course updateCourse(
             @Parameter(name = "id") @RequestParam long id,
             @Parameter(name = "incoming") @RequestBody Course incoming) {
 
@@ -130,7 +130,7 @@ public class CourseController extends ApiController {
     @Operation(summary = "Delete a single course")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("")
-    public Object deleteOrganization(
+    public Object deleteCourse(
             @Parameter(name = "id") @RequestParam long id) {
 
         Course course = courseRepository.findById(id)
