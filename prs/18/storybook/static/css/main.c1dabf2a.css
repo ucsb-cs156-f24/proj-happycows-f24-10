@@ -85,6 +85,12 @@ body {
   font-family: 'Rye', serif;
 }
 
+@-webkit-keyframes textclip {
+    to {
+      background-position: 200% center;
+    }
+  }
+
 @keyframes textclip {
     to {
       background-position: 200% center;
@@ -99,4 +105,4 @@ body {
     text-align: center;
 }
 
-/*# sourceMappingURL=main.3e01abed.css.map*/
+/*# sourceMappingURL=main.c1dabf2a.css.map*/
