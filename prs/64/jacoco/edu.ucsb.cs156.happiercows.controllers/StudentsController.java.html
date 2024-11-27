@@ -24,10 +24,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 @RestController
 <span class="fc" id="L25">public class StudentsController extends ApiController {</span>
 
-<span class="nc" id="L27">  public enum Status {</span>
-<span class="nc" id="L28">    INSERTED, UPDATED</span>
-  };
-
   @Autowired
   StudentRepository studentRepository;
 
@@ -42,9 +38,9 @@ import io.swagger.v3.oas.annotations.Parameter;
   @GetMapping(&quot;&quot;)
   public ResponseEntity&lt;String&gt; allStudents()
       throws JsonProcessingException {
-<span class="nc" id="L45">    Iterable&lt;Student&gt; students = studentRepository.findAll();</span>
-<span class="nc" id="L46">    String body = mapper.writeValueAsString(students);</span>
-<span class="nc" id="L47">    return ResponseEntity.ok().body(body);</span>
+<span class="fc" id="L41">    Iterable&lt;Student&gt; students = studentRepository.findAll();</span>
+<span class="fc" id="L42">    String body = mapper.writeValueAsString(students);</span>
+<span class="fc" id="L43">    return ResponseEntity.ok().body(body);</span>
   }
 
   @Operation(summary = &quot;Get a student by id&quot;)
@@ -52,9 +48,9 @@ import io.swagger.v3.oas.annotations.Parameter;
   @GetMapping(&quot;/student&quot;)
   public ResponseEntity&lt;Student&gt; studentById(@Parameter(name = &quot;id&quot;) @RequestParam long id)
       throws JsonProcessingException {
-<span class="nc" id="L55">    Student student = studentRepository.findById(id)</span>
-<span class="nc" id="L56">        .orElseThrow(() -&gt; new EntityNotFoundException(Student.class, id));</span>
-<span class="nc" id="L57">    return ResponseEntity.ok().body(student);</span>
+<span class="fc" id="L51">    Student student = studentRepository.findById(id)</span>
+<span class="fc" id="L52">        .orElseThrow(() -&gt; new EntityNotFoundException(Student.class, id));</span>
+<span class="fc" id="L53">    return ResponseEntity.ok().body(student);</span>
   }
 
   @Operation(summary = &quot;Get a student by email&quot;)
@@ -62,8 +58,8 @@ import io.swagger.v3.oas.annotations.Parameter;
   @GetMapping(&quot;/email&quot;)
   public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentByEmail(@Parameter(name = &quot;email&quot;) @RequestParam String email)
       throws JsonProcessingException {
-<span class="nc" id="L65">    Iterable&lt;Student&gt; students = studentRepository.findByEmail(email);</span>
-<span class="nc" id="L66">    return ResponseEntity.ok().body(students);</span>
+<span class="fc" id="L61">    Iterable&lt;Student&gt; students = studentRepository.findByEmail(email);</span>
+<span class="fc" id="L62">    return ResponseEntity.ok().body(students);</span>
   }
 
   @Operation(summary = &quot;Get a list of students by courseId&quot;)
@@ -71,27 +67,26 @@ import io.swagger.v3.oas.annotations.Parameter;
   @GetMapping(&quot;/course&quot;)
   public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentsByCourse(@Parameter(name = &quot;courseId&quot;) @RequestParam long courseId)
       throws JsonProcessingException {
-<span class="nc" id="L74">    Iterable&lt;Student&gt; students = studentRepository.findByCourseId(courseId);</span>
-<span class="nc" id="L75">    return ResponseEntity.ok().body(students);</span>
+<span class="fc" id="L70">    Iterable&lt;Student&gt; students = studentRepository.findByCourseId(courseId);</span>
+<span class="fc" id="L71">    return ResponseEntity.ok().body(students);</span>
   }
 
   @Operation(summary = &quot;Get a student by perm&quot;)
   @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
   @GetMapping(&quot;/perm&quot;)
-  public ResponseEntity&lt;Student&gt; studentByPerm(@Parameter(name = &quot;perm&quot;) @RequestParam String perm)
+  public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentByPerm(@Parameter(name = &quot;perm&quot;) @RequestParam String perm)
       throws JsonProcessingException {
-<span class="nc" id="L83">    Iterable&lt;Student&gt; students = studentRepository.findByPerm(perm);</span>
-<span class="nc" id="L84">    return ResponseEntity.ok().body(students.iterator().next());</span>
+<span class="fc" id="L79">    Iterable&lt;Student&gt; students = studentRepository.findByPerm(perm);</span>
+<span class="fc" id="L80">    return ResponseEntity.ok().body(students);</span>
   }
 
   @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
   @GetMapping(&quot;/course/perm&quot;)
-
   public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentByCourseAndPerm(
       @Parameter(name = &quot;courseId&quot;) @RequestParam long courseId,
       @Parameter(name = &quot;perm&quot;) @RequestParam String perm) throws JsonProcessingException {
-<span class="nc" id="L93">    Iterable&lt;Student&gt; students = studentRepository.findByCourseIdAndPerm(courseId, perm);</span>
-<span class="nc" id="L94">    return ResponseEntity.ok().body(students);</span>
+<span class="fc" id="L88">    Iterable&lt;Student&gt; students = studentRepository.findByCourseIdAndPerm(courseId, perm);</span>
+<span class="fc" id="L89">    return ResponseEntity.ok().body(students);</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
