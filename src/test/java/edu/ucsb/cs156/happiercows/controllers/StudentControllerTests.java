@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -25,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -206,6 +208,53 @@ public class StudentControllerTests extends ControllerTestCase {
     String expectedJson = objectMapper.writeValueAsString(student);
     String responseString = response.getResponse().getContentAsString();
     assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = { "ADMIN" })
+  @Test
+  public void updateStudent() throws Exception {
+    // arrange
+    Student existingStudent = Student.builder()
+        .id(1L)
+        .email("cgaucho@ucsb.edu")
+        .firstMiddleName("Chris P")
+        .lastName("Gaucho")
+        .courseId(0L)
+        .perm("1234567")
+        .build();
+
+    Student updatedStudent = Student.builder()
+        .id(1L) // Include ID
+        .email("cgaucho@ucsb.edu")
+        .firstMiddleName("Christopher")
+        .lastName("Gaucho")
+        .courseId(1L)
+        .perm("7654321")
+        .build();
+
+    String requestBody = objectMapper.writeValueAsString(updatedStudent);
+
+    when(studentRepository.findById(1L)).thenReturn(Optional.of(existingStudent));
+    when(studentRepository.save(any(Student.class))).thenReturn(updatedStudent);
+
+    // act
+    MvcResult response = mockMvc.perform(
+        put("/api/admin/students?id=1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .characterEncoding("utf-8")
+            .content(requestBody)
+            .with(csrf()))
+        .andExpect(status().isOk())
+        .andDo(print()) // Debugging log
+        .andReturn();
+
+    // assert
+    verify(studentRepository, times(1)).findById(1L);
+    verify(studentRepository, times(1)).save(updatedStudent);
+
+    String responseString = response.getResponse().getContentAsString();
+    Student responseStudent = objectMapper.readValue(responseString, Student.class);
+    assertEquals(updatedStudent, responseStudent); // Compare objects directly
   }
 
 }

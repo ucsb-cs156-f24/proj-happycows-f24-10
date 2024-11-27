@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import edu.ucsb.cs156.happiercows.repositories.StudentRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Tag(name = "Students")
 @RequestMapping("/api/admin/students")
@@ -93,7 +95,8 @@ public class StudentsController extends ApiController {
   @Operation(summary = "Create a new student")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping("/post")
-  public Student createStudent(@RequestParam String perm, @RequestParam String email, @RequestParam String firstMiddleName, @RequestParam String lastName, @RequestParam long courseId) {
+  public Student createStudent(@RequestParam String perm, @RequestParam String email,
+      @RequestParam String firstMiddleName, @RequestParam String lastName, @RequestParam long courseId) {
     Student student = new Student();
     student.setPerm(perm);
     student.setEmail(email);
@@ -106,4 +109,24 @@ public class StudentsController extends ApiController {
     return savedStudent;
   }
 
+  @Operation(summary = "Update a student")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PutMapping("")
+  public Student updateStudent(
+      @Parameter(name = "id") @RequestParam long id,
+      @Parameter(name = "incoming") @RequestBody Student incoming) {
+
+    Student student = studentRepository.findById(id)
+        .orElseThrow(() -> new EntityNotFoundException(Student.class, id));
+
+    student.setPerm(incoming.getPerm());
+    student.setEmail(incoming.getEmail());
+    student.setFirstMiddleName(incoming.getFirstMiddleName());
+    student.setLastName(incoming.getLastName());
+    student.setCourseId(incoming.getCourseId());
+
+    studentRepository.save(student);
+
+    return student;
+  }
 }
