@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StudentsController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">happycows</a> &gt; <a href="index.source.html" class="el_package">edu.ucsb.cs156.happiercows.controllers</a> &gt; <span class="el_source">StudentsController.java</span></div><h1>StudentsController.java</h1><pre class="source lang-java linenums">package edu.ucsb.cs156.happiercows.controllers;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import edu.ucsb.cs156.happiercows.entities.Student;
+import edu.ucsb.cs156.happiercows.errors.EntityNotFoundException;
+import edu.ucsb.cs156.happiercows.repositories.CourseRepository;
+import edu.ucsb.cs156.happiercows.repositories.StudentRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+
+@Tag(name = &quot;Students&quot;)
+@RequestMapping(&quot;/api/admin/students&quot;)
+@RestController
+<span class="fc" id="L26">public class StudentsController extends ApiController {</span>
+
+  @Autowired
+  StudentRepository studentRepository;
+
+  @Autowired
+  CourseRepository courseRepository;
+
+  @Autowired
+  ObjectMapper mapper;
+
+  @Operation(summary = &quot;Get a list of all students&quot;)
+  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+  @GetMapping(&quot;&quot;)
+  public ResponseEntity&lt;String&gt; allStudents()
+      throws JsonProcessingException {
+<span class="fc" id="L42">    Iterable&lt;Student&gt; students = studentRepository.findAll();</span>
+<span class="fc" id="L43">    String body = mapper.writeValueAsString(students);</span>
+<span class="fc" id="L44">    return ResponseEntity.ok().body(body);</span>
+  }
+
+  @Operation(summary = &quot;Get a student by id&quot;)
+  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+  @GetMapping(&quot;/student&quot;)
+  public ResponseEntity&lt;Student&gt; studentById(@Parameter(name = &quot;id&quot;) @RequestParam long id)
+      throws JsonProcessingException {
+<span class="fc" id="L52">    Student student = studentRepository.findById(id)</span>
+<span class="fc" id="L53">        .orElseThrow(() -&gt; new EntityNotFoundException(Student.class, id));</span>
+<span class="fc" id="L54">    return ResponseEntity.ok().body(student);</span>
+  }
+
+  @Operation(summary = &quot;Get a student by email&quot;)
+  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+  @GetMapping(&quot;/email&quot;)
+  public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentByEmail(@Parameter(name = &quot;email&quot;) @RequestParam String email)
+      throws JsonProcessingException {
+<span class="fc" id="L62">    Iterable&lt;Student&gt; students = studentRepository.findByEmail(email);</span>
+<span class="fc" id="L63">    return ResponseEntity.ok().body(students);</span>
+  }
+
+  @Operation(summary = &quot;Get a list of students by courseId&quot;)
+  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+  @GetMapping(&quot;/course&quot;)
+  public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentsByCourse(@Parameter(name = &quot;courseId&quot;) @RequestParam long courseId)
+      throws JsonProcessingException {
+<span class="fc" id="L71">    Iterable&lt;Student&gt; students = studentRepository.findByCourseId(courseId);</span>
+<span class="fc" id="L72">    return ResponseEntity.ok().body(students);</span>
+  }
+
+  @Operation(summary = &quot;Get a student by perm&quot;)
+  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+  @GetMapping(&quot;/perm&quot;)
+  public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentByPerm(@Parameter(name = &quot;perm&quot;) @RequestParam String perm)
+      throws JsonProcessingException {
+<span class="fc" id="L80">    Iterable&lt;Student&gt; students = studentRepository.findByPerm(perm);</span>
+<span class="fc" id="L81">    return ResponseEntity.ok().body(students);</span>
+  }
+
+  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+  @GetMapping(&quot;/course/perm&quot;)
+  public ResponseEntity&lt;Iterable&lt;Student&gt;&gt; studentByCourseAndPerm(
+      @Parameter(name = &quot;courseId&quot;) @RequestParam long courseId,
+      @Parameter(name = &quot;perm&quot;) @RequestParam String perm) throws JsonProcessingException {
+<span class="fc" id="L89">    Iterable&lt;Student&gt; students = studentRepository.findByCourseIdAndPerm(courseId, perm);</span>
+<span class="fc" id="L90">    return ResponseEntity.ok().body(students);</span>
+  }
+
+  @Operation(summary = &quot;Create a new student&quot;)
+  @PreAuthorize(&quot;hasRole('ROLE_ADMIN')&quot;)
+  @PostMapping(&quot;/post&quot;)
+  public Student createStudent(@RequestParam String perm, @RequestParam String email, @RequestParam String firstMiddleName, @RequestParam String lastName, @RequestParam long courseId) {
+<span class="fc" id="L97">    Student student = new Student();</span>
+<span class="fc" id="L98">    student.setPerm(perm);</span>
+<span class="fc" id="L99">    student.setEmail(email);</span>
+<span class="fc" id="L100">    student.setFirstMiddleName(firstMiddleName);</span>
+<span class="fc" id="L101">    student.setLastName(lastName);</span>
+<span class="fc" id="L102">    student.setCourseId(courseId);</span>
+
+<span class="fc" id="L104">    Student savedStudent = studentRepository.save(student);</span>
+
+<span class="fc" id="L106">    return savedStudent;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>
