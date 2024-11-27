@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,4 +89,21 @@ public class StudentsController extends ApiController {
     Iterable<Student> students = studentRepository.findByCourseIdAndPerm(courseId, perm);
     return ResponseEntity.ok().body(students);
   }
+
+  @Operation(summary = "Create a new student")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PostMapping("/post")
+  public Student createStudent(@RequestParam String perm, @RequestParam String email, @RequestParam String firstMiddleName, @RequestParam String lastName, @RequestParam long courseId) {
+    Student student = new Student();
+    student.setPerm(perm);
+    student.setEmail(email);
+    student.setFirstMiddleName(firstMiddleName);
+    student.setLastName(lastName);
+    student.setCourseId(courseId);
+
+    Student savedStudent = studentRepository.save(student);
+
+    return savedStudent;
+  }
+
 }

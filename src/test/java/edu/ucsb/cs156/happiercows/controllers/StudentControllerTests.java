@@ -24,8 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @WebMvcTest(controllers = StudentsController.class)
 @Import(StudentsController.class)
@@ -179,6 +182,30 @@ public class StudentControllerTests extends ControllerTestCase {
     List<Student> actualStudents = objectMapper.readValue(responseString, new TypeReference<List<Student>>() {
     });
     assertEquals(students, actualStudents);
+  }
+
+  @WithMockUser(roles = { "ADMIN" })
+  @Test
+  public void canPostStudent() throws Exception {
+    // arrange
+    Student student = Student.builder()
+        .email("cgaucho@ucsb.edu").firstMiddleName("Chris P").lastName("Gaucho")
+        .courseId(1L).perm("1234567").build();
+
+    when(studentRepository.save(eq(student))).thenReturn(student);
+
+    // act
+    MvcResult response = mockMvc.perform(
+        post(
+            "/api/admin/students/post?perm=1234567&email=cgaucho@ucsb.edu&firstMiddleName=Chris P&lastName=Gaucho&courseId=1")
+            .with(csrf()))
+        .andReturn();
+
+    // assert
+    verify(studentRepository, times(1)).save(eq(student));
+    String expectedJson = objectMapper.writeValueAsString(student);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
   }
 
 }
