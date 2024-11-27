@@ -24,10 +24,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 @RestController
 public class StudentsController extends ApiController {
 
-  public enum Status {
-    INSERTED, UPDATED
-  };
-
   @Autowired
   StudentRepository studentRepository;
 
@@ -78,15 +74,14 @@ public class StudentsController extends ApiController {
   @Operation(summary = "Get a student by perm")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @GetMapping("/perm")
-  public ResponseEntity<Student> studentByPerm(@Parameter(name = "perm") @RequestParam String perm)
+  public ResponseEntity<Iterable<Student>> studentByPerm(@Parameter(name = "perm") @RequestParam String perm)
       throws JsonProcessingException {
     Iterable<Student> students = studentRepository.findByPerm(perm);
-    return ResponseEntity.ok().body(students.iterator().next());
+    return ResponseEntity.ok().body(students);
   }
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @GetMapping("/course/perm")
-
   public ResponseEntity<Iterable<Student>> studentByCourseAndPerm(
       @Parameter(name = "courseId") @RequestParam long courseId,
       @Parameter(name = "perm") @RequestParam String perm) throws JsonProcessingException {
